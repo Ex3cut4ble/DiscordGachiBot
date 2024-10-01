@@ -57,6 +57,6 @@ class GachiBot(discord.Client):
 
     async def _play_gachi(self, interaction: discord.Interaction) -> None:
         await interaction.response.defer(thinking=True)
-        music_player = await play_from_url_stream_test(self._config.get_value(SITE_KEY))
+        music_player = await play_from_url_stream(self._config.get_value(SITE_KEY))
         interaction.guild.voice_client.play(music_player, after=lambda e: print(f'Music player error: {e}') if e else None)
         await interaction.followup.send(content="Гачи-радио включено.")

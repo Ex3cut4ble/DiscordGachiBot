@@ -1,3 +1,8 @@
-# Discord bot, which provides online gachi music streaming
+# Discord-бот, транслирующий музыку с гачи-радио
 
 От ♂️slaves♂️ для ♂️slaves♂️
+
+## Установка
+1. Иметь установленный Python версии >= 3.12
+2. Запустить `start.bat`
+3. ♂️fisting♂️
