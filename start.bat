@@ -12,7 +12,7 @@ if exist "%VENV_DIR%" (
     python -m venv "%VENV_DIR%"
     
     if exist "%PYTHON_VENV%" (
-        echo Venv succesfully created.
+        echo Venv successfully created.
     ) else (
         echo Error occured while creating venv. Exiting...
         exit /b 1
