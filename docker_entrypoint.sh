@@ -1,4 +1,4 @@
 #!/bin/sh
 
-cd /home/qadrosb
+cd /home/dockerdc/
 python3 main.py

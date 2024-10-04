@@ -8,8 +8,8 @@ WORKDIR /home
 RUN adduser --system --group dockerdc
 
 RUN git clone https://github.com/Ex3cut4ble/DiscordGachiBot ./dockerdc/
-RUN chown -R dockerdc:dockerdc ./dockerdc/bot/* &&\
-    chmod -R 0755 ./dockerdc/bot/*
+RUN chown -R dockerdc:dockerdc ./dockerdc/* &&\
+    chmod -R 0755 ./dockerdc/*
 
 RUN pip install --no-cache-dir -r ./dockerdc/requirements.txt
 
