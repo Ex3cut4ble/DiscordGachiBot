@@ -1,6 +1,6 @@
 FROM python:3.12.2
 
-RUN apt-get update -y && apt-get -y install sudo git nano curl dos2unix &&\
+RUN apt-get update -y && apt-get -y install sudo git nano curl dos2unix ffmpeg &&\
     apt-get clean && apt-get autoclean && apt-get autoremove --yes && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /home
