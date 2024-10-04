@@ -50,7 +50,7 @@ class GachiBot(discord.Client):
                 await self._play_gachi(interaction)
             except Exception as ex:
                 print(ex)
-                await interaction.response.send_message(content="Произошла ошибка.\n-# Посмотрите консоль бота для подробностей.")
+                await interaction.followup.send(content="Произошла ошибка.\n-# Посмотрите консоль бота для подробностей.")
 
         @self._command_tree.command(name='gachi_stop', description='Останавливает гачи-радио.')
         async def _gachi_stop(interaction: discord.Interaction):
