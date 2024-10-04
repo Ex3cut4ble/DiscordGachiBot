@@ -10,6 +10,9 @@ class Config:
     def _parse_config(self):
         with open(self._filepath, 'r') as configfile:
             for line in configfile:
+                if not line:
+                    continue
+
                 key, arg = line.split("=", 1)
                 arg = arg.strip()
                 if arg.startswith("\"") or arg.startswith("\'"):
