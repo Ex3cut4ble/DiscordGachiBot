@@ -1,6 +1,6 @@
 FROM python:3.12.2
 
-RUN apt-get update -y && apt-get -y install sudo git nano curl ffmpeg &&\
+RUN apt-get update -y && apt-get -y install sudo git nano curl dos2unix &&\
     apt-get clean && apt-get autoclean && apt-get autoremove --yes && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /home
@@ -12,6 +12,8 @@ RUN chown -R dockerdc:dockerdc ./dockerdc/* &&\
     chmod -R 0755 ./dockerdc/*
 
 RUN pip install --no-cache-dir -r ./dockerdc/requirements.txt
+
+RUN dos2unix ./dockerdc/docker_entrypoint.sh
 
 USER dockerdc
 

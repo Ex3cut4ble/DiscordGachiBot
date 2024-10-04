@@ -4,6 +4,10 @@ set "DIR=%~dp0"
 set "VENV_DIR=%DIR%venv"
 set "PYTHON_VENV=%VENV_DIR%\Scripts\python.exe"
 
+if not exist ffmpeg.exe (
+    echo FFMPEG not found, installing...
+    .\install_ffmpeg.bat
+)
 
 if exist "%VENV_DIR%" (
     echo Venv found.
