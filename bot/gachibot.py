@@ -3,6 +3,7 @@ from typing import Any
 from discord.app_commands import CommandTree
 from discord.ext import tasks
 
+from bot.botgui import *
 from bot.musicplayer import *
 from bot.radiorequests import RadioRequester
 from utils.configreader import Config
@@ -32,12 +33,12 @@ class GachiBot(discord.Client):
             voice_client = interaction.guild.voice_client
 
             if not interaction.user.voice:
-                await interaction.response.send_message(content="Вы не подключены к голосовому каналу.", ephemeral=True)
+                await interaction.response.send_message(embed=build_error_embed("Вы не подключены к голосовому каналу"), ephemeral=True)
                 return
 
             if voice_client is not None:
                 if voice_client.is_playing():
-                    await interaction.response.send_message(content="Бот уже играет гачи-радио.", ephemeral=True)
+                    await interaction.response.send_message(embed=build_error_embed("Бот уже играет гачи-радио"), ephemeral=True)
                     return
                 else:
                     await voice_client.disconnect()
@@ -50,18 +51,25 @@ class GachiBot(discord.Client):
                 await self._play_gachi(interaction)
             except Exception as ex:
                 print(ex)
-                await interaction.followup.send(content="Произошла ошибка.\n-# Посмотрите консоль бота для подробностей.")
+                await interaction.followup.send(embed=build_error_embed("Произошла ошибка", "-# Посмотрите консоль бота для подробностей"))
 
         @self._command_tree.command(name='gachi_stop', description='Останавливает гачи-радио.')
-        async def _gachi_stop(interaction: discord.Interaction):
+        async def _gachi_stop_cmd(interaction: discord.Interaction):
             voice_client = interaction.guild.voice_client
 
             if voice_client is None or not voice_client.is_playing():
-                await interaction.response.send_message(content="Бот не играет гачи-радио.", ephemeral=True)
+                await interaction.response.send_message(embed=build_error_embed("Бот не играет гачи-радио"), ephemeral=True)
                 return
 
             await voice_client.disconnect(force=False)
-            await interaction.response.send_message(content="Гачи-радио выключено.")
+            await interaction.response.send_message(embed=build_ok_embed("Гачи-радио выключено"))
+
+        @self._command_tree.command(name='gachi-search', description='Ищет музыку по введённой фразе.')
+        async def _gachi_search_cmd(interaction: discord.Interaction, search: str = ""):
+            data = self._radio_requester.list_search(search, 1)
+            list_embed = build_search_embed(search, 1, data["rows"])
+            search_view = SearchSongsView(self._radio_requester, search, 1, data["rows"])
+            await interaction.response.send_message(embed=list_embed, view=search_view, ephemeral=True)
 
     @tasks.loop(seconds=20)
     async def _status_update(self) -> None:
@@ -87,4 +95,4 @@ class GachiBot(discord.Client):
         await interaction.response.defer(thinking=True)
         music_player = await play_from_url_stream(self._config.get_value(SITE_KEY) + RADIO_GET)
         interaction.guild.voice_client.play(music_player, after=lambda e: print(f'Music player error: {e}') if e else None)
-        await interaction.followup.send(content="Гачи-радио включено.")
+        await interaction.followup.send(embed=build_ok_embed("Гачи-радио включено"))
