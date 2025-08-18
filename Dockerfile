@@ -5,16 +5,16 @@ RUN apt-get update -y && apt-get -y install sudo git nano curl dos2unix ffmpeg &
 
 WORKDIR /home
 
-RUN adduser --system --group dockerdc
+RUN adduser --system --group gachibot
 
-RUN git clone https://github.com/Ex3cut4ble/DiscordGachiBot ./dockerdc/
-RUN chown -R dockerdc:dockerdc ./dockerdc/* &&\
-    chmod -R 0755 ./dockerdc/*
+RUN git clone https://github.com/Ex3cut4ble/DiscordGachiBot ./gachibot/
+RUN chown -R gachibot:gachibot ./gachibot/* &&\
+    chmod -R 0755 ./gachibot/*
 
-RUN pip install --no-cache-dir -r ./dockerdc/requirements.txt
+RUN pip install --no-cache-dir -r ./gachibot/requirements.txt
 
-RUN dos2unix ./dockerdc/docker_entrypoint.sh
+RUN dos2unix ./gachibot/docker_entrypoint.sh
 
-USER dockerdc
+USER gachibot
 
-ENTRYPOINT [ "./dockerdc/docker_entrypoint.sh" ]
+ENTRYPOINT [ "./gachibot/docker_entrypoint.sh" ]
