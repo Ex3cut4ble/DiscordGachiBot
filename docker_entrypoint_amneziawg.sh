@@ -1,8 +1,8 @@
 #!/bin/sh
 awg-quick up wg0
-sudo sh -c "su dockerdc"
+sudo sh -c "su gachibot"
 
-cd /home/dockerdc
+cd /home/gachibot
 python3.12 main.py
 
 sudo sh -c "su root"
