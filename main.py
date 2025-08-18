@@ -1,14 +1,26 @@
-import discord
+import asyncio
+
+import disnake
 
 from bot.gachibot import GachiBot
 from utils.configreader import Config
 
+from aiohttp_socks import ProxyConnector
 
-def main():
+
+async def main():
     config = Config("bot_config.cfg")
-    intents = discord.Intents.default()
-    client = GachiBot(config, intents=intents)
-    client.run(config.get_value('token'))
+    intents = disnake.Intents.default()
+    proxy_url = config.get_value('proxy-url')
+    connector = ProxyConnector.from_url(proxy_url) if proxy_url else None
+    client = GachiBot(config, intents=intents, connector=connector)
+
+    try:
+        await client.start(config.get_value('token'))
+    except Exception:
+        pass
+    finally:
+        await client.close()
 
 if __name__ == '__main__':
-    main()
+    asyncio.run(main())

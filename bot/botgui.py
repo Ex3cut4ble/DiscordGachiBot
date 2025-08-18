@@ -1,5 +1,5 @@
-import discord
-from discord import Embed
+import disnake
+from disnake import Embed
 
 from bot.radiorequests import RadioRequester
 
@@ -38,7 +38,7 @@ def build_ok_embed(title: str, description: str = "") -> Embed:
     return Embed(color=0x00FF00, title=title, description=description)
 
 
-class SearchSongsView(discord.ui.View):
+class SearchSongsView(disnake.ui.View):
     def __init__(self, requester: RadioRequester, search_song: str, page: int, songs: dict):
         super().__init__()
         self._search = search_song
@@ -47,8 +47,8 @@ class SearchSongsView(discord.ui.View):
         self._songs = songs
         self.add_item(SongSelection(requester, songs))
 
-    @discord.ui.button(label='Предыдущая страница ⏪', row=1)
-    async def prev_page(self, interaction: discord.Interaction, button: discord.ui.Button):
+    @disnake.ui.button(label='Предыдущая страница ⏪', row=1)
+    async def prev_page(self, interaction: disnake.Interaction, button: disnake.ui.Button):
         if self._page - 1 < 1:
             return
 
@@ -56,8 +56,8 @@ class SearchSongsView(discord.ui.View):
         search_view = SearchSongsView(self._radio_requester, self._search, self._page - 1, data["rows"])
         await interaction.response.edit_message(embed=build_search_embed(self._search, self._page - 1, data["rows"]), view=search_view)
 
-    @discord.ui.button(label='Следующая страница ⏩', row=1)
-    async def next_page(self, interaction: discord.Interaction, button: discord.ui.Button):
+    @disnake.ui.button(label='Следующая страница ⏩', row=1)
+    async def next_page(self, interaction: disnake.Interaction, button: disnake.ui.Button):
         data = self._radio_requester.list_search(self._search, self._page + 1)
         if len(data["rows"]) < 1:
             return
@@ -66,7 +66,7 @@ class SearchSongsView(discord.ui.View):
         await interaction.response.edit_message(embed=build_search_embed(self._search, self._page + 1, data["rows"]), view=search_view)
 
 
-class SongSelection(discord.ui.Select):
+class SongSelection(disnake.ui.Select):
     def __init__(self, radio_requester: RadioRequester, songs: dict):
         super().__init__(row=2)
         self._radio_requester = radio_requester
@@ -80,7 +80,7 @@ class SongSelection(discord.ui.Select):
             }
             self.add_option(label=f"{i + 1}", value=f"{songs[i]['request_id']}", description=f"Заказать {i + 1}-й трек из списка")
 
-    async def callback(self, interaction: discord.Interaction):
+    async def callback(self, interaction: disnake.Interaction):
         song_id = self.values[0]
         status = self._radio_requester.request_song_by_id(song_id)
         if status == 200:
