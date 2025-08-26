@@ -19,6 +19,7 @@ async def main():
     proxy_url = config.get_value('proxy-url')
     connector = ProxyConnector.from_url(proxy_url) if proxy_url else None
     client = GachiBot(config, intents=intents, connector=connector)
+    client.load_extension("cogs.gachi")
 
     try:
         await client.start(config.get_value('token'))
