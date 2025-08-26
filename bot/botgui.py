@@ -48,7 +48,7 @@ class SearchSongsView(disnake.ui.View):
         self.add_item(SongSelection(requester, songs))
 
     @disnake.ui.button(label='Предыдущая страница ⏪', row=1)
-    async def prev_page(self, interaction: disnake.Interaction, button: disnake.ui.Button):
+    async def prev_page(self, button: disnake.ui.Button, interaction: disnake.MessageInteraction):
         if self._page - 1 < 1:
             return
 
@@ -57,7 +57,7 @@ class SearchSongsView(disnake.ui.View):
         await interaction.response.edit_message(embed=build_search_embed(self._search, self._page - 1, data["rows"]), view=search_view)
 
     @disnake.ui.button(label='Следующая страница ⏩', row=1)
-    async def next_page(self, interaction: disnake.Interaction, button: disnake.ui.Button):
+    async def next_page(self, button: disnake.ui.Button, interaction: disnake.MessageInteraction):
         data = self._radio_requester.list_search(self._search, self._page + 1)
         if len(data["rows"]) < 1:
             return
@@ -66,7 +66,7 @@ class SearchSongsView(disnake.ui.View):
         await interaction.response.edit_message(embed=build_search_embed(self._search, self._page + 1, data["rows"]), view=search_view)
 
 
-class SongSelection(disnake.ui.Select):
+class SongSelection(disnake.ui.StringSelect):
     def __init__(self, radio_requester: RadioRequester, songs: dict):
         super().__init__(row=2)
         self._radio_requester = radio_requester
@@ -80,7 +80,7 @@ class SongSelection(disnake.ui.Select):
             }
             self.add_option(label=f"{i + 1}", value=f"{songs[i]['request_id']}", description=f"Заказать {i + 1}-й трек из списка")
 
-    async def callback(self, interaction: disnake.Interaction):
+    async def callback(self, interaction: disnake.MessageInteraction):
         song_id = self.values[0]
         status = self._radio_requester.request_song_by_id(song_id)
         if status == 200:
