@@ -1,4 +1,3 @@
-from disnake import VoiceClient
 from disnake.ext import commands
 from bot.botgui import *
 from bot.musicplayer import *
@@ -13,20 +12,29 @@ class Gachi(commands.Cog):
 
     @commands.slash_command(name='gachi', description='Включает гачи-радио в голосовом канале')
     async def _gachi_cmd(self, interaction: disnake.ApplicationCommandInteraction):
+        await interaction.response.defer(with_message=True)
+
         if not interaction.guild.voice_client:
             if interaction.author.voice:
-                await interaction.author.voice.channel.connect()
+                print("before connect")
+                await interaction.author.voice.channel.connect(timeout=5, reconnect=False)
+                print("after connect")
             else:
-                await interaction.response.send_message(embed=build_error_embed("Вы не подключены к голосовому каналу"), ephemeral=True)
+                await interaction.send(embed=build_error_embed("Вы не подключены к голосовому каналу"), ephemeral=True)
                 return
         else:
-            await interaction.response.send_message(embed=build_error_embed("Бот уже играет гачи-радио"), ephemeral=True)
+            await interaction.send(embed=build_error_embed("Бот уже играет гачи-радио"), ephemeral=True)
+            return
+
+        if not interaction.guild.voice_client:
+            await interaction.send(embed=build_error_embed("Произошла ошибка подключения к каналу", "-# Посмотрите консоль бота для подробностей"))
+            return
 
         try:
             await self._play_gachi(interaction)
         except Exception as ex:
             print(ex)
-            await interaction.followup.send(
+            await interaction.send(
                 embed=build_error_embed("Произошла ошибка", "-# Посмотрите консоль бота для подробностей"))
 
     @commands.slash_command(name='gachi_stop', description='Останавливает гачи-радио.')
@@ -38,9 +46,10 @@ class Gachi(commands.Cog):
             return
 
         await voice_client.disconnect(force=False)
+        voice_client.cleanup()
         await interaction.response.send_message(embed=build_ok_embed("Гачи-радио выключено"))
 
-    @commands.slash_command(name='gachi-search', description='Ищет музыку по введённой фразе.')
+    @commands.slash_command(name='gachi_search', description='Ищет музыку по введённой фразе.')
     async def _gachi_search_cmd(self, interaction: disnake.ApplicationCommandInteraction, search: str = ""):
         data = self.bot.radio_requester.list_search(search, 1)
         list_embed = build_search_embed(search, 1, data["rows"])
@@ -48,7 +57,7 @@ class Gachi(commands.Cog):
         await interaction.response.send_message(embed=list_embed, view=search_view, ephemeral=True)
 
     async def _play_gachi(self, interaction: disnake.ApplicationCommandInteraction) -> None:
-        await interaction.response.defer(with_message=True)
+        #await interaction.response.defer(with_message=True)
         music_player = await play_from_url_stream(self.bot.config.get_value("gachi-music-site") + RADIO_GET)
         interaction.guild.voice_client.play(music_player, after=lambda e: print(f'Music player error: {e}') if e else None)
         await interaction.followup.send(embed=build_ok_embed("Гачи-радио включено"))
